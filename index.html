@@ -8,20 +8,33 @@
     #numbers { margin-top: 1em; font-weight: bold; }
     .error { color: red; margin-top: 0.5em; }
     .success { color: green; margin-top: 0.5em; }
+    .count { margin-top: 0.5em; }
+    .number-item { cursor: pointer; margin-right: 5px; }
+    button { margin-left: 0.5em; }
   </style>
 </head>
 <body>
   <h2>Введи число:</h2>
   <input id="numberInput" type="text" placeholder="Наприклад: 7" />
   <button onclick="addNumber()">Додати</button>
+  <button onclick="clearAll()">Очистити все</button>
   <div id="message"></div>
+  <div class="count" id="count"></div>
   <div id="numbers"></div>
 
   <script>
-    const numbersSet = new Set();
     const input = document.getElementById('numberInput');
     const message = document.getElementById('message');
     const display = document.getElementById('numbers');
+    const countDisplay = document.getElementById('count');
+    const numbersSet = new Set();
+
+    // Завантаження з localStorage
+    const saved = localStorage.getItem('numbers');
+    if (saved) {
+      saved.split('|').map(x => x.trim()).forEach(num => numbersSet.add(num));
+      updateDisplay();
+    }
 
     function addNumber() {
       const value = input.value.trim();
@@ -36,11 +49,38 @@
       } else {
         numbersSet.add(value);
         message.innerHTML = `<span class="success">Додано: ${value}</span>`;
-        display.textContent = Array.from(numbersSet).join(' | ');
+        updateDisplay();
       }
 
       input.value = '';
       input.focus();
+    }
+
+    function updateDisplay() {
+      display.innerHTML = '';
+      Array.from(numbersSet).forEach(num => {
+        const span = document.createElement('span');
+        span.textContent = num;
+        span.className = 'number-item';
+        span.onclick = () => {
+          numbersSet.delete(num);
+          updateDisplay();
+        };
+        display.appendChild(span);
+        display.appendChild(document.createTextNode(' | '));
+      });
+
+      const list = Array.from(numbersSet).join(' | ');
+      localStorage.setItem('numbers', list);
+      countDisplay.textContent = `Кількість: ${numbersSet.size}`;
+    }
+
+    function clearAll() {
+      numbersSet.clear();
+      localStorage.removeItem('numbers');
+      display.textContent = '';
+      countDisplay.textContent = '';
+      message.innerHTML = '';
     }
 
     input.addEventListener('keydown', function (e) {
