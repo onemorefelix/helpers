@@ -16,33 +16,41 @@
   <div id="error" class="error"></div>
   <div id="numbers"></div>
 
-  <script>
-    const numbersSet = new Set();
+ <script>
+  const numbersSet = new Set();
+  const input = document.getElementById('numberInput');
+  const error = document.getElementById('error');
+  const display = document.getElementById('numbers');
 
-    function addNumber() {
-      const input = document.getElementById('numberInput');
-      const error = document.getElementById('error');
-      const display = document.getElementById('numbers');
-      const value = input.value.trim();
+  function addNumber() {
+    const value = input.value.trim();
 
-      if (!value.match(/^\d+$/)) {
-        error.textContent = 'Введи тільки число';
-        return;
-      }
-
-      if (numbersSet.has(value)) {
-        error.textContent = `Число ${value} вже введене`;
-      } else {
-        numbersSet.add(value);
-        error.textContent = '';
-        const span = document.createElement('div');
-        span.textContent = value;
-        display.appendChild(span);
-      }
-
-      input.value = '';
-      input.focus();
+    if (!value.match(/^\d+$/)) {
+      error.textContent = 'Введи тільки число';
+      return;
     }
-  </script>
+
+    if (numbersSet.has(value)) {
+      error.textContent = `Число ${value} вже введене`;
+    } else {
+      numbersSet.add(value);
+      error.textContent = '';
+      const span = document.createElement('div');
+      span.textContent = value;
+      display.appendChild(span);
+    }
+
+    input.value = '';
+    input.focus();
+  }
+
+  // Додаємо обробку Enter
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      addNumber();
+    }
+  });
+</script>
+
 </body>
 </html>
