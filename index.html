@@ -5,52 +5,47 @@
   <title>Ввід чисел</title>
   <style>
     body { font-family: sans-serif; padding: 2em; }
-    #numbers { margin-top: 1em; }
+    #numbers { margin-top: 1em; font-weight: bold; }
     .error { color: red; margin-top: 0.5em; }
+    .success { color: green; margin-top: 0.5em; }
   </style>
 </head>
 <body>
   <h2>Введи число:</h2>
   <input id="numberInput" type="text" placeholder="Наприклад: 7" />
   <button onclick="addNumber()">Додати</button>
-  <div id="error" class="error"></div>
+  <div id="message"></div>
   <div id="numbers"></div>
 
- <script>
-  const numbersSet = new Set();
-  const input = document.getElementById('numberInput');
-  const error = document.getElementById('error');
-  const display = document.getElementById('numbers');
+  <script>
+    const numbersSet = new Set();
+    const input = document.getElementById('numberInput');
+    const message = document.getElementById('message');
+    const display = document.getElementById('numbers');
 
-  function addNumber() {
-    const value = input.value.trim();
+    function addNumber() {
+      const value = input.value.trim();
 
-    if (!value.match(/^\d+$/)) {
-      error.textContent = 'Введи тільки число';
-      return;
+      if (!value.match(/^\d+$/)) {
+        message.innerHTML = '<span class="error">Введи тільки число</span>';
+        return;
+      }
+
+      if (numbersSet.has(value)) {
+        message.innerHTML = `<span class="error">Число ${value} вже введене</span>`;
+      } else {
+        numbersSet.add(value);
+        message.innerHTML = `<span class="success">Додано: ${value}</span>`;
+        display.textContent = Array.from(numbersSet).join(' | ');
+      }
+
+      input.value = '';
+      input.focus();
     }
 
-    if (numbersSet.has(value)) {
-      error.textContent = `Число ${value} вже введене`;
-    } else {
-      numbersSet.add(value);
-      error.textContent = '';
-      const span = document.createElement('div');
-      span.textContent = value;
-      display.appendChild(span);
-    }
-
-    input.value = '';
-    input.focus();
-  }
-
-  // Додаємо обробку Enter
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-      addNumber();
-    }
-  });
-</script>
-
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') addNumber();
+    });
+  </script>
 </body>
 </html>
